@@ -84,17 +84,31 @@ renderer.setAnimationLoop(() => {
 
 	velocity -= tangent.y * 0.0000001 * delta;
 	velocity = Math.max(0.00004, Math.min(0.0002, velocity));
-	train.lookAt(lookAt.copy(position).sub(tangent));
+	//train.lookAt(lookAt.copy(position).sub(tangent));
 
-	/*
+	
 	const quaternion = new THREE.Quaternion();
+	
+	const from = new THREE.Vector3();
+	from.copy(curve.getPointAt(progress));
+	const to = new THREE.Vector3();
+	to.copy(curve.getPointAt(progress + 0.1));
+	
+	quaternion.setFromUnitVectors(from, to);
 	//quaternion.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), 0.001 );
-	quaternion.setFromAxisAngle(tangent, 0.001);
+	//quaternion.setFromAxisAngle(tangent, 0.01);
+	const euler = new THREE.Euler();
+	//euler.setFromVector3(tangent);
+	//quaternion.setFromEuler(euler);
+	euler.setFromQuaternion(quaternion, "XYZ");
+	camera.rotation.x = euler.x;
+	camera.rotation.y = euler.y;
+	camera.rotation.z = euler.z;
+	
 	//camera.rotation.x = Math.PI / 2;
-	camera.rotation.y = -Math.PI / 2;
-	train.applyQuaternion(quaternion);
-	*/
-
+	//camera.rotation.y = -Math.PI / 2;
+	//train.applyQuaternion(quaternion);
+	
 	renderer.render(scene, camera);
 	prevTime = time;
 });
