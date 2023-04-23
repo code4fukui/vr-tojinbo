@@ -69,6 +69,8 @@ let velocity = 0;
 let progress = 0;
 
 let prevTime = performance.now();
+let prevZ = train.rotation.z;
+let zz = 0;
 
 renderer.setAnimationLoop(() => {
 	const time = performance.now();
@@ -86,28 +88,59 @@ renderer.setAnimationLoop(() => {
 	velocity = Math.max(0.00004, Math.min(0.0002, velocity));
 	//train.lookAt(lookAt.copy(position).sub(tangent));
 
-	
+	/*
+	let z = train.rotation.z;
+	console.log(z, prevZ, train.rotation)
+	//if (Math.abs(z - prevZ) > .1) {
+	//if (z > 0 && prevZ < 0) {
+	if (prevZ < 0 && z > 0) {
+		zz += Math.PI;
+		console.log("!!!!", z, prevZ);
+	} else if (z < 0 && prevZ > 0) {
+		//zz -= Math.PI;
+		console.log("!!!!2", z, prevZ);
+	} else if (z > 0 && prevZ > 0) {
+		//zz -= Math.PI;
+	}
+	z = train.rotation.z = zz + z;
+	prevZ = z;
+	*/
+		
+
+	const q = train.quaternion;
 	const quaternion = new THREE.Quaternion();
 	
 	const from = new THREE.Vector3();
 	from.copy(curve.getPointAt(progress));
 	const to = new THREE.Vector3();
-	to.copy(curve.getPointAt(progress + 0.1));
+	to.copy(curve.getPointAt(progress + 0.001));
 	
-	quaternion.setFromUnitVectors(from, to);
-	//quaternion.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), 0.001 );
+	//quaternion.setFromUnitVectors(from, to);
+	const qx = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.atan(tangent.x));
+	const qy = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.atan(tangent.y));
+	const qz = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.atan(tangent.z));
+	quaternion.multiply(qz);
+	quaternion.multiply(qy);
+	quaternion.multiply(qx);
+
+	//quaternion.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.atan(tangent.x));
+	//quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.atan(tangent.y));
 	//quaternion.setFromAxisAngle(tangent, 0.01);
-	const euler = new THREE.Euler();
 	//euler.setFromVector3(tangent);
 	//quaternion.setFromEuler(euler);
+	train.rotation.setFromQuaternion(quaternion);
+	/*
+	const euler = new THREE.Euler();
 	euler.setFromQuaternion(quaternion, "XYZ");
 	camera.rotation.x = euler.x;
 	camera.rotation.y = euler.y;
 	camera.rotation.z = euler.z;
+	*/
 	
 	//camera.rotation.x = Math.PI / 2;
-	//camera.rotation.y = -Math.PI / 2;
+	camera.rotation.y = -Math.PI / 2;
 	//train.applyQuaternion(quaternion);
+	//train.quaternion.multiply(quaternion);
 	
 	renderer.render(scene, camera);
 	prevTime = time;
