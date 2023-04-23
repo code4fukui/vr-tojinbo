@@ -5,7 +5,8 @@ import {
 	RollerCoasterLiftersGeometry,
 	TreesGeometry,
 	SkyGeometry
-} from 'three/addons/misc/RollerCoaster.js';
+//} from 'three/addons/misc/RollerCoaster.js';
+} from "/RollerCoaster.js";
 import { PromiseGLTFLoader } from "./PromiseGLTFLoader.js";
 //import { makeMeshSkyGround } from "./makeMeshSkyGround.js";
 

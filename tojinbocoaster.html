@@ -42,7 +42,18 @@ window.addEventListener("resize", () => {
 const scene = new THREE.Scene();
 
 //const curve = makeCurve();
-const curve = new Curve();
+//const curve = new Curve();
+class MyCurve extends Curve {
+  getPointAt(t) {
+    t *= Math.PI * 2;
+    const x = Math.sin(t * 3) * 30;
+    const y = Math.cos(t * 3) * 20 + 40;
+    const z = Math.cos(t * 6) * 10;
+    return this.vector.set(x, y, z);
+  }
+}
+const curve = new MyCurve();
+
 await addCoaster(scene, curve);
 
 const train = new THREE.Object3D();
@@ -74,6 +85,15 @@ renderer.setAnimationLoop(() => {
 	velocity -= tangent.y * 0.0000001 * delta;
 	velocity = Math.max(0.00004, Math.min(0.0002, velocity));
 	train.lookAt(lookAt.copy(position).sub(tangent));
+
+	/*
+	const quaternion = new THREE.Quaternion();
+	//quaternion.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), 0.001 );
+	quaternion.setFromAxisAngle(tangent, 0.001);
+	//camera.rotation.x = Math.PI / 2;
+	camera.rotation.y = -Math.PI / 2;
+	train.applyQuaternion(quaternion);
+	*/
 
 	renderer.render(scene, camera);
 	prevTime = time;
